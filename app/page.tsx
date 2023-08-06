@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import AppleMusic from "@/components/icons/apple-music"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -54,7 +54,7 @@ export default function Home() {
   const handleDownload = () => {
     const element = document.getElementById("coverElement")
     if (element) {
-      html2canvas(element).then((canvas) => {
+      html2canvas(element, { useCORS: true, allowTaint: true }).then((canvas) => {
         const link = document.createElement("a")
         link.download = `playlist-cover.${form.watch("imageFormat")}`
         link.href = canvas.toDataURL()
@@ -82,9 +82,8 @@ export default function Home() {
                 <Button onClick={handleDownload}>Download</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" title="Toggle image format settings">
                       <Cog className="h-5 w-5" />
-                      <span className="sr-only">Toggle image format settings</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56">
@@ -114,7 +113,8 @@ export default function Home() {
                 {/* Background Image */}
                 <Image
                   src={`/assets/gradients/${form.watch("gradient")}.png`}
-                  alt="0"
+                  loading="eager"
+                  alt={`Gradient ${form.watch("gradient")}`}
                   layout="fill"
                   quality={100}
                   className="rounded-lg"
@@ -163,7 +163,7 @@ export default function Home() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        <Switch checked={field.value} onCheckedChange={field.onChange} title="Toggle Apple Music Logo"/>
                       </FormControl>
                     </FormItem>
                   )}
@@ -239,8 +239,13 @@ export default function Home() {
                               className="rounded-full border-2 border-muted bg-popover p-0.5 hover:cursor-pointer hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
                             >
                               <Avatar className="h-full w-full">
-                                <RadioGroupItem value={`${index}`} id={`${index}`} className="sr-only" />
-                                <AvatarImage src={`/assets/gradients/${index}.png`} alt={`${index}`} />
+                                <RadioGroupItem value={`${index}`} id={`${index}`} className="sr-only" title={`Gradient ${index}`}/>
+                                <Image
+                                  src={`/assets/gradients/${index}.png`}
+                                  alt={`Gradient ${index}`}
+                                  width={70}
+                                  height={70}
+                                />
                               </Avatar>
                             </Label>
                           ))}
