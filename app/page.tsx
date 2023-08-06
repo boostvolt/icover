@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import html2canvas from "html2canvas"
 import { Cog, Info } from "lucide-react"
 import Image from "next/image"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import AppleMusic from "@/components/icons/apple-music"
@@ -36,6 +37,7 @@ const formSchema = z.object({
   subTitle: z.string(),
   footer: z.string(),
   gradient: z.string(),
+  color: z.string(),
 })
 
 export default function Home() {
@@ -48,8 +50,11 @@ export default function Home() {
       subTitle: "",
       footer: "",
       gradient: "0",
+      color: "",
     }),
   })
+  const { dirtyFields } = form.formState
+  const isEdited = dirtyFields.bigTitle ?? dirtyFields.subTitle ?? dirtyFields.footer
 
   const handleDownload = () => {
     const element = document.getElementById("coverElement")
@@ -62,6 +67,10 @@ export default function Home() {
       })
     }
   }
+
+  useEffect(() => {
+    form.setValue("color", "")
+  }, [form.watch("gradient")])
 
   return (
     <main className="flex justify-center">
@@ -112,7 +121,9 @@ export default function Home() {
               <div id="coverElement" style={{ width: 300, height: 300, position: "relative" }}>
                 {/* Background Image */}
                 <Image
-                  src={`/assets/gradients/${form.watch("gradient")}.png`}
+                  src={`/assets/${
+                    form.watch("color") === "" ? `gradients/${form.watch("gradient")}` : `colors/${form.watch("color")}`
+                  }.png`}
                   loading="eager"
                   alt={`Gradient ${form.watch("gradient")}`}
                   layout="fill"
@@ -127,15 +138,19 @@ export default function Home() {
                 )}
                 {/* Big Title */}
                 <div style={{ position: "absolute", top: 55, left: 25 }}>
-                  <h1 className="text-[3em] font-semibold text-white">{form.watch("bigTitle")}</h1>
+                  <h1 className="text-[3em] font-semibold text-white">
+                    {isEdited ? form.watch("bigTitle") : "Big Title"}
+                  </h1>
                 </div>
                 {/* Sub Title */}
                 <div style={{ position: "absolute", top: 105, left: 25 }}>
-                  <h2 className="text-[2.5em] font-thin text-white">{form.watch("subTitle")}</h2>
+                  <h2 className="text-[2.5em] font-thin text-white">
+                    {isEdited ? form.watch("subTitle") : "Sub Title"}
+                  </h2>
                 </div>
                 {/* Footer */}
                 <div style={{ position: "absolute", bottom: 25, left: 25 }}>
-                  <h3 className="text-sm text-slate-300">{form.watch("footer")}</h3>
+                  <h3 className="text-sm text-white text-opacity-60">{isEdited ? form.watch("footer") : "Footer"}</h3>
                 </div>
               </div>
             </div>
@@ -163,7 +178,11 @@ export default function Home() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} title="Toggle Apple Music Logo"/>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          title="Toggle Apple Music Logo"
+                        />
                       </FormControl>
                     </FormItem>
                   )}
@@ -215,7 +234,6 @@ export default function Home() {
                 <TabsTrigger value="color" className="w-full">
                   Color
                 </TabsTrigger>
-                <Separator orientation="vertical" />
                 <TabsTrigger value="image" className="w-full">
                   Image
                 </TabsTrigger>
@@ -232,19 +250,24 @@ export default function Home() {
                           defaultValue={field.value}
                           className="grid grid-cols-5 gap-4"
                         >
-                          {[...Array(30)].map((_, index) => (
+                          {[...Array(40)].map((_, index) => (
                             <Label
                               key={index}
                               htmlFor={`${index}`}
                               className="rounded-full border-2 border-muted bg-popover p-0.5 hover:cursor-pointer hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
                             >
                               <Avatar className="h-full w-full">
-                                <RadioGroupItem value={`${index}`} id={`${index}`} className="sr-only" title={`Gradient ${index}`}/>
+                                <RadioGroupItem
+                                  value={`${index}`}
+                                  id={`${index}`}
+                                  className="sr-only"
+                                  title={`Gradient ${index}`}
+                                />
                                 <Image
                                   src={`/assets/gradients/${index}.png`}
                                   alt={`Gradient ${index}`}
-                                  width={70}
-                                  height={70}
+                                  width={100}
+                                  height={100}
                                 />
                               </Avatar>
                             </Label>
@@ -256,11 +279,45 @@ export default function Home() {
                 />
               </TabsContent>
               <TabsContent value="color" className="mt-4">
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertTitle>Coming soon</AlertTitle>
-                  <AlertDescription>Color selection will be available soon.</AlertDescription>
-                </Alert>
+                <FormField
+                  control={form.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="grid grid-cols-5 gap-4"
+                        >
+                          {[...Array(7)].map((_, index) => (
+                            <Label
+                              key={index}
+                              htmlFor={`${index}`}
+                              className="rounded-full border-2 border-muted bg-popover p-0.5 hover:cursor-pointer hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                            >
+                              <Avatar className="h-full w-full">
+                                <RadioGroupItem
+                                  value={`${index}`}
+                                  id={`${index}`}
+                                  className="sr-only"
+                                  title={`Color ${index}`}
+                                />
+                                <Image
+                                  src={`/assets/colors/${index}.png`}
+                                  alt={`Color ${index}`}
+                                  width={100}
+                                  height={100}
+                                />
+                              </Avatar>
+                            </Label>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                {/* <Input id="image" type="color" /> */}
               </TabsContent>
               <TabsContent value="image" className="mt-4">
                 <Alert>

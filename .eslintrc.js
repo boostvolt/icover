@@ -2,12 +2,7 @@
 const fs = require("fs")
 
 module.exports = {
-  extends: [
-    "next",
-    "prettier",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:tailwindcss/recommended",
-  ],
+  extends: ["next", "prettier", "plugin:@typescript-eslint/recommended", "plugin:tailwindcss/recommended"],
   parserOptions: {
     babelOptions: {
       presets: [require.resolve("next/babel")],
