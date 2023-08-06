@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import html2canvas from "html2canvas"
 import { Cog, Info } from "lucide-react"
 import Image from "next/image"
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import AppleMusic from "@/components/icons/apple-music"
@@ -67,6 +67,41 @@ export default function Home() {
       })
     }
   }
+
+  const [bigTitleFontSize, setBigTitleFontSize] = useState(3)
+  const [subTitleFontSize, setSubTitleFontSize] = useState(2.5)
+  const [footerFontSize, setFooterFontSize] = useState(1)
+
+  const bigTitleRef = useRef(null)
+  const subTitleRef = useRef(null)
+  const footerRef = useRef(null)
+
+  useEffect(() => {
+    const getFontSizeToFit = (textRef: React.RefObject<HTMLDivElement>, maxWidth: number, defaultFontSize: number) => {
+      if (!textRef.current) return defaultFontSize
+
+      const textElement = textRef.current
+      let currentFontSize = defaultFontSize
+      textElement.style.fontSize = `${currentFontSize}em`
+
+      while (textElement.offsetWidth > maxWidth) {
+        currentFontSize -= 0.1
+        textElement.style.fontSize = `${currentFontSize}em`
+      }
+
+      return currentFontSize
+    }
+
+    const maxWidth = 270
+
+    const newBigTitleFontSize = getFontSizeToFit(bigTitleRef, maxWidth, 3)
+    const newSubTitleFontSize = getFontSizeToFit(subTitleRef, maxWidth, 2.5)
+    const newFooterFontSize = getFontSizeToFit(footerRef, maxWidth, 1)
+
+    setBigTitleFontSize(newBigTitleFontSize)
+    setSubTitleFontSize(newSubTitleFontSize)
+    setFooterFontSize(newFooterFontSize)
+  }, [form.watch("bigTitle"), form.watch("subTitle"), form.watch("footer")])
 
   useEffect(() => {
     form.setValue("color", "")
@@ -138,19 +173,29 @@ export default function Home() {
                 )}
                 {/* Big Title */}
                 <div style={{ position: "absolute", top: 55, left: 25 }}>
-                  <h1 className="text-[3em] font-semibold text-white">
+                  <h1
+                    ref={bigTitleRef}
+                    className="font-semibold text-white whitespace-nowrap"
+                    style={{ fontSize: `${bigTitleFontSize}em` }}
+                  >
                     {isEdited ? form.watch("bigTitle") : "Big Title"}
                   </h1>
                 </div>
                 {/* Sub Title */}
                 <div style={{ position: "absolute", top: 105, left: 25 }}>
-                  <h2 className="text-[2.5em] font-thin text-white">
+                  <h2 ref={subTitleRef} className="font-thin text-white whitespace-nowrap" style={{ fontSize: `${subTitleFontSize}em` }}>
                     {isEdited ? form.watch("subTitle") : "Sub Title"}
                   </h2>
                 </div>
                 {/* Footer */}
                 <div style={{ position: "absolute", bottom: 25, left: 25 }}>
-                  <h3 className="text-sm text-white text-opacity-60">{isEdited ? form.watch("footer") : "Footer"}</h3>
+                  <h3
+                    ref={footerRef}
+                    className="text-white text-opacity-60 whitespace-nowrap"
+                    style={{ fontSize: `${footerFontSize}em` }}
+                  >
+                    {isEdited ? form.watch("footer") : "Footer"}
+                  </h3>
                 </div>
               </div>
             </div>
