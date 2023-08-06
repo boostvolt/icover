@@ -39,6 +39,8 @@ const formSchema = z.object({
 })
 
 export default function Home() {
+ 
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: formSchema.parse({
@@ -50,6 +52,8 @@ export default function Home() {
       gradient: "0",
     }),
   })
+  const { dirtyFields } = form.formState
+  const isEdited = dirtyFields.bigTitle ?? dirtyFields.subTitle ?? dirtyFields.footer 
 
   const handleDownload = () => {
     const element = document.getElementById("coverElement")
@@ -127,15 +131,15 @@ export default function Home() {
                 )}
                 {/* Big Title */}
                 <div style={{ position: "absolute", top: 55, left: 25 }}>
-                  <h1 className="text-[3em] font-semibold text-white">{form.watch("bigTitle")}</h1>
+                  <h1 className="text-[3em] font-semibold text-white">{isEdited ? form.watch("bigTitle") : "Big Title"}</h1>
                 </div>
                 {/* Sub Title */}
                 <div style={{ position: "absolute", top: 105, left: 25 }}>
-                  <h2 className="text-[2.5em] font-thin text-white">{form.watch("subTitle")}</h2>
+                  <h2 className="text-[2.5em] font-thin text-white">{isEdited ? form.watch("subTitle") : "Sub Title"}</h2>
                 </div>
                 {/* Footer */}
                 <div style={{ position: "absolute", bottom: 25, left: 25 }}>
-                  <h3 className="text-sm text-slate-300">{form.watch("footer")}</h3>
+                  <h3 className="text-sm text-white text-opacity-60">{isEdited ? form.watch("footer") : "Footer"}</h3>
                 </div>
               </div>
             </div>
@@ -215,7 +219,6 @@ export default function Home() {
                 <TabsTrigger value="color" className="w-full">
                   Color
                 </TabsTrigger>
-                <Separator orientation="vertical" />
                 <TabsTrigger value="image" className="w-full">
                   Image
                 </TabsTrigger>
@@ -232,7 +235,7 @@ export default function Home() {
                           defaultValue={field.value}
                           className="grid grid-cols-5 gap-4"
                         >
-                          {[...Array(30)].map((_, index) => (
+                          {[...Array(40)].map((_, index) => (
                             <Label
                               key={index}
                               htmlFor={`${index}`}
