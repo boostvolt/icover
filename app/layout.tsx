@@ -3,7 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import "@/styles/globals.css"
 
 export const metadata: Metadata = {
-  title: "iCover",
+  title: "iCover - Apple-Style Cover Creator",
   description:
     "Design a captivating and visually appealing cover artwork for your Apple Music playlist to engage listeners and convey the theme or mood of the curated songs.",
   keywords: [
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Boostvolt", url: "https://github.com/boostvolt" }],
   openGraph: {
-    title: "iCover",
+    title: "iCover - Apple-Style Cover Creator",
     description:
       "Design a captivating and visually appealing cover artwork for your Apple Music playlist to engage listeners and convey the theme or mood of the curated songs.",
     url: "https://icover.vercel.app",
