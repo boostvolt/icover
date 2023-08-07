@@ -2,24 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import html2canvas from "html2canvas"
-import { Cog, Info } from "lucide-react"
+import { Info } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import AppleMusic from "@/components/icons/apple-music"
+import { SettingsMenu } from "@/components/settings-menu"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -31,7 +23,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SfProDisplay } from "@/lib/fonts/sf-pro-display"
 
 const formSchema = z.object({
-  imageFormat: z.enum(["png", "jpeg"]),
   appleMusicLogo: z.boolean(),
   bigTitle: z.string(),
   subTitle: z.string(),
@@ -44,7 +35,6 @@ export default function Home() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: formSchema.parse({
-      imageFormat: "png",
       appleMusicLogo: true,
       bigTitle: "",
       subTitle: "",
@@ -61,7 +51,7 @@ export default function Home() {
     if (element) {
       html2canvas(element, { useCORS: true, allowTaint: true }).then((canvas) => {
         const link = document.createElement("a")
-        link.download = `playlist-cover.${form.watch("imageFormat")}`
+        link.download = "playlist-cover.png"
         link.href = canvas.toDataURL()
         link.click()
       })
@@ -122,33 +112,7 @@ export default function Home() {
                 <CardTitle>iCover</CardTitle>
               </div>
 
-              <div className="flex space-x-4">
-                <Button onClick={handleDownload}>Download</Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" title="Toggle image format settings">
-                      <Cog className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuLabel>Image Format</DropdownMenuLabel>
-                    <FormField
-                      control={form.control}
-                      name="imageFormat"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <DropdownMenuRadioGroup onValueChange={field.onChange} value={field.value}>
-                              <DropdownMenuRadioItem value="png">PNG</DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem value="jpeg">JPEG</DropdownMenuRadioItem>
-                            </DropdownMenuRadioGroup>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              <SettingsMenu downloadOnClick={handleDownload} />
             </div>
           </CardHeader>
           <CardContent>
@@ -175,7 +139,7 @@ export default function Home() {
                 <div style={{ position: "absolute", top: 55, left: 25 }}>
                   <h1
                     ref={bigTitleRef}
-                    className="font-semibold text-white whitespace-nowrap"
+                    className="whitespace-nowrap font-semibold text-white"
                     style={{ fontSize: `${bigTitleFontSize}em` }}
                   >
                     {isEdited ? form.watch("bigTitle") : "Big Title"}
@@ -183,7 +147,11 @@ export default function Home() {
                 </div>
                 {/* Sub Title */}
                 <div style={{ position: "absolute", top: 105, left: 25 }}>
-                  <h2 ref={subTitleRef} className="font-thin text-white whitespace-nowrap" style={{ fontSize: `${subTitleFontSize}em` }}>
+                  <h2
+                    ref={subTitleRef}
+                    className="whitespace-nowrap font-thin text-white"
+                    style={{ fontSize: `${subTitleFontSize}em` }}
+                  >
                     {isEdited ? form.watch("subTitle") : "Sub Title"}
                   </h2>
                 </div>
@@ -191,7 +159,7 @@ export default function Home() {
                 <div style={{ position: "absolute", bottom: 25, left: 25 }}>
                   <h3
                     ref={footerRef}
-                    className="text-white text-opacity-60 whitespace-nowrap"
+                    className="whitespace-nowrap text-white text-opacity-60"
                     style={{ fontSize: `${footerFontSize}em` }}
                   >
                     {isEdited ? form.watch("footer") : "Footer"}
