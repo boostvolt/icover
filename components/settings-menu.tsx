@@ -2,7 +2,7 @@
 
 import { Cog } from "lucide-react"
 import { useTheme } from "next-themes"
-import { FC, useState } from "react"
+import { FC, useCallback, useState } from "react"
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,44 +12,50 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./ui/alert-dialog"
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "./ui/menubar"
+import { Button } from "./ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
 
-interface SettingsMenuProps {
-  downloadOnClick: () => void
-}
-
-export const SettingsMenu: FC<SettingsMenuProps> = ({ downloadOnClick }) => {
+export const SettingsMenu: FC = () => {
   const { setTheme, theme } = useTheme()
-  const [isAckknowledgmentsOpen, setAckknowledgmentsOpen] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  const handleAppearanceSelect = useCallback(() => {
+    setTheme(theme === "light" ? "dark" : "light")
+  }, [theme, setTheme])
+
+  const handleAcknowledgmentSelect = useCallback(() => {
+    setOpen(!open)
+  }, [setOpen, open])
 
   return (
     <>
-      <Menubar>
-        <MenubarMenu>
-          <MenubarTrigger onClick={downloadOnClick}>Download</MenubarTrigger>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger title="Settings">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="secondary" title="Settings">
             <Cog className="h-5 w-5" />
-          </MenubarTrigger>
-          <MenubarContent>
-            <MenubarItem onClick={() => setTheme(theme === "light" ? "dark" : "light")}>Switch Appearance</MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onClick={() => setAckknowledgmentsOpen(true)}>Acknowledgments</MenubarItem>
-            <MenubarItem disabled>v1.0.1</MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
-      <AlertDialog
-        open={isAckknowledgmentsOpen}
-        onOpenChange={(isAckknowledgmentsOpen) => {
-          if (isAckknowledgmentsOpen === true) return
-          setAckknowledgmentsOpen(false)
-        }}
-      >
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onSelect={handleAppearanceSelect}>Switch Appearance</DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem onSelect={handleAcknowledgmentSelect}>Acknowledgments</DropdownMenuItem>
+          <DropdownMenuItem disabled>v1.1.0</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={open} onOpenChange={handleAcknowledgmentSelect}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle> Acknowledgments</AlertDialogTitle>
+            <AlertDialogTitle>Acknowledgments</AlertDialogTitle>
             <AlertDialogDescription>
               We are deeply inspired by the creativity and innovation of countless individuals and projects, which have
               fueled our own endeavors and shaped the direction of this work.
@@ -87,6 +93,7 @@ export const SettingsMenu: FC<SettingsMenuProps> = ({ downloadOnClick }) => {
               </ul>
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel>Close</AlertDialogCancel>
           </AlertDialogFooter>

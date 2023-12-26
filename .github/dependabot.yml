@@ -1,0 +1,17 @@
+version: 2
+
+updates:
+  # NPM
+  - package-ecosystem: "npm"
+    target-branch: main
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm-packages:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "fix: "
+    labels:
+      - "fix"
