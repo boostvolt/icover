@@ -39,6 +39,7 @@ const absolutePosition = (top?: number, bottom?: number, left = 25): CSSProperti
 })
 
 export const Cover: FC<CoverProps> = (props) => {
+  const imagePath = props.color === "" ? `gradients/${props.gradient}` : `colors/${props.color}`
   const coverTexts = [
     {
       ref: props.bigTitleRef,
@@ -66,19 +67,14 @@ export const Cover: FC<CoverProps> = (props) => {
   return (
     <div id="coverElement">
       <div style={{ width: 300, height: 300, position: "relative" }}>
-        <img
-          src={`/assets/${props.color === "" ? `gradients/${props.gradient}` : `colors/${props.color}`}.png`}
-          alt="Cover Background"
-          className="rounded-lg"
-        />
-        {/* <img src={`/assets/${props.color === "" ? `gradients/${props.gradient}` : `colors/${props.color}`}.png`} /> */}
+        <img src={`/assets/${imagePath}.png`} alt="Cover Background" className="rounded-lg" />
         {props.isAppleMusicLogoVisible && (
           <div style={absolutePosition(10)}>
             <AppleMusic fontSize={60} color="white" fill="white" />
           </div>
         )}
-        {coverTexts.map((textProps, index) => (
-          <div style={textProps.style} key={index}>
+        {coverTexts.map((textProps) => (
+          <div style={textProps.style} key={textProps.placeholder}>
             <CoverText
               ref={textProps.ref}
               isEdited={props.isEdited}

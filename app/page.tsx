@@ -25,6 +25,7 @@ export default function Home() {
   })
   const { dirtyFields } = form.formState
   const isEdited = dirtyFields.bigTitle ?? dirtyFields.subTitle ?? dirtyFields.footer ?? false
+  const watchedGradient = form.watch("gradient")
 
   const bigTitleRef = useRef(null)
   useAdjustFontSize(bigTitleRef, form.watch("bigTitle"), 3)
@@ -37,7 +38,7 @@ export default function Home() {
 
   useEffect(() => {
     form.setValue("color", "")
-  }, [form.watch("gradient")])
+  }, [form, watchedGradient])
 
   return (
     <main className="flex justify-center">
